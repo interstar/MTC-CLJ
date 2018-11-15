@@ -1,10 +1,12 @@
 # mtc-clj
 
-A Clojure library designed to ... well, that part is up to you.
+Mind Traffic Control in Clojure  
+
+(Ported / adapted from Mind Traffic Control in Racket)
 
 ## Usage
 
-FIXME
+
 
 ## License
 

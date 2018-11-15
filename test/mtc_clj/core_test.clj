@@ -31,6 +31,9 @@
 
 (deftest tags
   (testing "+project tags"
-    (let [mtc (make-MTC '("hello" "teenage +america" "world" "team +america police"))]
+    (let [mtc (make-MTC '("hello" "teenage +america" "world" "team +america police" "@email me"))]
       (is (= (pull mtc #"\+america")
-             '("teenage +america" "team +america police" "hello" "world"))))))
+             '("teenage +america" "team +america police" "hello" "world" "@email me")) )
+      (is (= (pull mtc #"@email")
+             '("@email me" "hello" "teenage +america" "world" "team +america police"))))
+    ))
