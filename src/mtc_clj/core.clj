@@ -1,7 +1,8 @@
 (ns mtc-clj.core
 
   (:require [clojure.spec.alpha :as s]
-           ; [clojure.data.finger-tree :refer [double-list]]
+            ;; [clojure.data.finger-tree :refer [double-list]]
+
             )
   )
 
@@ -11,7 +12,9 @@
 (defn make-MTC [items]
   (s/conform ::MTC items))
 
-(defn next [mtc] (first mtc))
+(defn next [mtc]
+  (if (empty? mtc) "Mind Traffic Control is currently empty"
+      (first mtc)))
 (defn tail [mtc] (rest mtc))
 (defn add [mtc item] (lazy-seq (concat mtc (list item) )))
 (defn add-first [mtc item] (cons item mtc))
@@ -34,3 +37,13 @@
         ]
     (lazy-seq (concat match no-match))
     ))
+
+(defn info [mtc pattern]
+  (let [nf #(nil? (re-find (re-pattern pattern) %))
+        no-match (filter nf mtc)
+        match (filter #(not (nf %)) mtc)
+        item-filt #(nil? (re-find (re-pattern (str "^&" pattern)) % ) )
+        items (filter item-filt match)
+        not-items (filter #(not (item-filt %)) match)
+        ]
+    (lazy-seq (concat items not-items))))

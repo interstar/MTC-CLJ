@@ -5,5 +5,8 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/data.finger-tree "0.0.3"]
-
-                 ])
+                 [instaparse "1.4.9"]
+                 ]
+  :aot [mtc-clj.cli]
+  :main mtc-clj.cli
+  )
