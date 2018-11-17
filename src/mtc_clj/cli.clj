@@ -14,7 +14,9 @@
   )
 
 (defn show-next [mtc]
-  (println (next mtc)))
+  (println "Next : " (next mtc)))
+
+
 
 (def parse
   (insta/parser "
@@ -50,34 +52,42 @@ LIST500 = 'llll';
         (swap! mtc add input)
         (show-next @mtc))
       (let [line (second (second parsed))]
-        (cond (= :INS (first line))
-              (let [ins (first (second line))]
-                   (cond (= ins :LIST)
-                         (show-all @mtc)
-                         (= ins :LIST10)
-                         (show-all (take 10 @mtc))
-                         (= ins :LIST50)
-                         (show-all (take 50 @mtc))
-                         (= ins :LIST500)
-                         (show-all (take 500 @mtc))
+        (cond
+          (= :ARGINS (first line))
+          (let [cmd (-> line second first)
+                pattern (-> line second (#(nth % 3)) second)]
+            (println "Argument ins " cmd " : " pattern)
+            (cond (= cmd :PULL)
+                  (swap! mtc #(pull % pattern)))
+            (show-next @mtc))
 
-                         (= ins :DONE)
-                         (swap! mtc done)
+          (= :INS (first line))
+          (let [cmd (first (second line))]
+            (cond (= cmd :LIST)
+                  (show-all @mtc)
+                  (= cmd :LIST10)
+                  (show-all (take 10 @mtc))
+                  (= cmd :LIST50)
+                  (show-all (take 50 @mtc))
+                  (= cmd :LIST500)
+                  (show-all (take 500 @mtc))
 
-                         (= ins :DELAY)
-                         (swap! mtc delay)
-                         (= ins :DELAY10)
-                         (swap! mtc #(delay % 10))
-                         (= ins :DELAY50)
-                         (swap! mtc #(delay % 50))
-                         (= ins :DELAY500)
-                         (swap! mtc #(delay % 500))
+                  (= cmd :DONE)
+                  (swap! mtc done)
 
-                         :else
-                         (println "Don't understand " ins))
-                   (show-next @mtc)
-                   ))
+                  (= cmd :DELAY)
+                  (swap! mtc delay)
+                  (= cmd :DELAY10)
+                  (swap! mtc #(delay % 10))
+                  (= cmd :DELAY50)
+                  (swap! mtc #(delay % 50))
+                  (= cmd :DELAY500)
+                  (swap! mtc #(delay % 500))
 
+                  :else
+                  (println "Don't understand " cmd))
+            (show-next @mtc)
+            ))
 
         ))))
 
