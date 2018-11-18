@@ -44,6 +44,16 @@
      )))
 
 
+(defn push-pattern [mtc pattern len]
+  (let [nf #(nil? (re-find (re-pattern pattern) %))
+        no-match (filter nf mtc)
+        match (filter #(not (nf %)) mtc )
+        before (take len no-match)
+        after (drop len no-match)]
+    (lazy-seq (concat before match after))))
+
+(defn extra [mtc more]
+  (lazy-seq (concat (list (str (first mtc) " " more)) (tail mtc))))
 
 (defn info [mtc pattern]
   (let [nf #(nil? (re-find (re-pattern pattern) %))

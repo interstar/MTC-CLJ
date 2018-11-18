@@ -29,11 +29,21 @@
       (is (= (done mtc) '("item 2" "item 3")))
       ) ))
 
+
 (deftest defering
   (testing "delay"
     (let [mtc (range 10)]
       (is (= (delay-item mtc 5) '(1 2 3 4 5 0 6 7 8 9) ))
       )))
+
+(deftest pushing
+  (testing "push pattern"
+    (let [mtc (make-MTC '("hello1" "teenage" "america1" "goodbye" "cruel" "world" ))]
+      (is (= (push-pattern mtc "2" 3)
+             '("hello1" "teenage" "america1" "goodbye" "cruel" "world" )
+             ))
+      (is (= (push-pattern mtc "1" 3)
+             '("teenage" "goodbye" "cruel" "hello1" "america1" "world"))))))
 
 (deftest tags
   (testing "+project tags and @places"
@@ -44,6 +54,12 @@
              '("@email me" "hello" "teenage +america" "world" "team +america police"))))
     ))
 
+
+(deftest extra-top
+  (testing "append to the current next-item"
+    (let [mtc (make-MTC '("hello" "world"))]
+      (is (= (extra mtc "teenage america")
+             '("hello teenage america" "world"))))))
 
 (deftest infos
   (testing "&information tags"
@@ -66,6 +82,26 @@
                    [:ALL [:ARGINS [:PULL "+" " " [:PATTERN "hello"]]]]
                    )))
 
+      (is (= (prs "-- goodbye")
+             (list [:ALL [:TODO "-- goodbye"]]
+                   [:ALL [:ARGINS [:PUSHSHORT "--" " " [:PATTERN "goodbye"]]]]
+                   )))
+
+      (is (= (prs "--- goodbye")
+             (list [:ALL [:TODO "--- goodbye"]]
+                   [:ALL [:ARGINS [:PUSHMEDIUM "---" " " [:PATTERN "goodbye"]]]]
+                   )))
+
+      (is (= (prs "---- goodbye")
+             (list [:ALL [:TODO "---- goodbye"]]
+                   [:ALL [:ARGINS [:PUSHLONG "----" " " [:PATTERN "goodbye"]]]]
+                   )))
+
+
+      (is (= (prs "e mo' better blues")
+             (list [:ALL [:TODO "e mo' better blues"]]
+                   [:ALL [:ARGINS [:EXTRA "e" " " [:MORE "mo' better blues"]] ]])))
+
       (is (= (prs "*")
              (list [:ALL [:TODO "*"]]
                    [:ALL [:INS [:DONE "*"]]])))
@@ -82,23 +118,26 @@
              (list [:ALL [:TODO "s"]]
                    [:ALL [:INS [:SAVE "s"]]])))
 
+
+
+
       (is (= (prs "/")
              (list [:ALL [:TODO "/"]]
                    [:ALL [:INS [:DELAY "/"]]])))
 
       (is (= (prs "//")
              (list [:ALL [:TODO "//"]]
-                   [:ALL [:INS [:DELAY10 "//"]]])
+                   [:ALL [:INS [:DELAYSHORT "//"]]])
              ))
 
       (is (= (prs "///")
              (list [:ALL [:TODO "///"]]
-                   [:ALL [:INS [:DELAY50 "///"]]])
+                   [:ALL [:INS [:DELAYMEDIUM "///"]]])
              ))
 
       (is (= (prs "////")
              (list [:ALL [:TODO "////"]]
-                   [:ALL [:INS [:DELAY500 "////"]]])
+                   [:ALL [:INS [:DELAYLONG "////"]]])
              ))
 
 
@@ -108,15 +147,15 @@
 
       (is (= (prs "ll")
              (list [:ALL [:TODO "ll"]]
-                   [:ALL [:INS [:LIST10 "ll"]]])))
+                   [:ALL [:INS [:LISTSHORT "ll"]]])))
 
       (is (= (prs "lll")
              (list [:ALL [:TODO "lll"]]
-                   [:ALL [:INS [:LIST50 "lll"]]])))
+                   [:ALL [:INS [:LISTMEDIUM "lll"]]])))
 
       (is (= (prs "llll")
              (list [:ALL [:TODO "llll"]]
-                   [:ALL [:INS [:LIST500 "llll"]]])))
+                   [:ALL [:INS [:LISTLONG "llll"]]])))
 
 
       )))

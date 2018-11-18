@@ -41,7 +41,9 @@ To defer an item you use the `/` key.
 
 As mentioned previously, I have around 1300 items in my MTC. I haven't felt the need for a command to throw items 5000 back. But if you find yourself in the position of needing it, then make a request :-)
 
-Finally, there are times when you need to focus on a particular project.
+#### Pattern Based Manipulation of the Queue
+
+There are times when you need to focus on a particular project.
 
 The command `+ PATTERN` pulls all items which match PATTERN to the front of the queue.
 
@@ -49,7 +51,9 @@ I use the standard todo.txt conventions of having a `+` in front of project name
 
 So `+MTC` is my tag for items related to developing or distributing MTC. `@email` is my tag for any item that involves writing an email. 
 
-MTC has no special commands to handle these tags. If you want to pull them to the front, simply write an appropriate pattern and use with the "pull" command `+`.
+MTC has no special commands to handle these tags. And you can use any conveention that you like.
+
+If you want to pull tags to the front of the queue, simply write an appropriate pattern and use with the "pull" command `+`.
 
 Note that PATTERN is a standard regex. Which is powerful. But gives rise to one "quirk" (or bug). The `+` is a special character in regex and so must be escaped when you want to quote it literally. 
 
@@ -57,9 +61,49 @@ So use `+ \+MTC` when pulling all items tagged +MTC to the front.
 
 `@` is not problematic so you can write `+ @email` to pull all email context items to the front.
 
-MTC discourages you looking at the list entirely. But sometimes you need to, so we have the command `l` to list all items.
 
-As with the defer command, list also has local veriants.
+As well as pulling items that match a pattern to the front of the queue, you can also push them back.
+
+Sequences of the character `-` is used to push items back.
+
+For example :
+
+`-- PATTERN` finds all items matching PATTERN and puts them starting 10 back.
+
+`--- PATTERN` does the same but pushes all matches 50 items back.
+
+`---- PATTERN` pushes 500.
+
+NB : if you have some matches further back in the queue these will actually be pulled forward.
+
+The typical usage of this pushing mechanism is when you are working on a project but know that for some reason you are currently blocked on it. For example, waiting for someone else's input.
+
+You don't want to forget the project, but you know you must put it out of the way for the moment and concentrate on items not related to the project. 
+
+Remember that the point of MTC is not to treat you like an idiot. MTC assumes you know *roughly* what you need to be doing and what's important. It's to allow you to keep the details of those projects in a way which is easy to access when needed (by pulling forwards) and easy to forget about when not needed (by pushing backwards).
+
+#### Editing Items
+
+Items are short. Typically only about 5 to 10 words. So it's rare you need to edit them. Just delete and rewrite.
+
+But occassionally it *is* useful to extend an item with a bit of extra information.
+
+Eg. you want to turn
+
+     Call Steve 
+     
+into 
+
+     Call Steve on 04324 73873
+
+
+Do this with the `e` command. Ie. `e on 04324 73873` will append the string to the next item.
+
+#### Showing the Queue
+
+MTC discourages you looking at the queue entirely. But sometimes you need to, so we have the command `l` to list all items.
+
+As with the defer and push commands, list also has variants.
 
 `l` shows the list of all items in the queue
 
@@ -78,6 +122,7 @@ MTC has no explicit notion of priority or urgency. In usage, just keep urgent / 
 MTC works on the queue in memory. You need to explicitly save it back to the todo.txt file.
 
 Use the command `s` to save.
+
 
 
 Finally, the command `c` gives you a count of how many items you have in the queue. Which is something you sometimes want to know.

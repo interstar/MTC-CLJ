@@ -1,9 +1,10 @@
 (ns mtc-clj.cli
   (:require
+   [clojure.java.io :as io]
    [instaparse.core :as insta]
    [clojure.string :refer [split join]]
-   [mtc-clj.core :refer [make-MTC next-item tail add pull
-                         add-first delay-item done]]
+   [mtc-clj.core :refer [make-MTC next-item tail add pull extra
+                         add-first delay-item done push-pattern]]
    )
   (:gen-class)
   )
@@ -27,17 +28,17 @@
 ALL = INS | ARGINS | TODO;
 INS = DONE | ENDPULL | SAVE | COUNT
       | DELAY | LIST
-      | DELAY10 | DELAY50 | DELAY500
-      | LIST10 | LIST50 | LIST500;
-ARGINS = PULL;
+      | DELAYSHORT | DELAYMEDIUM | DELAYLONG
+      | LISTSHORT | LISTMEDIUM | LISTLONG;
+ARGINS = PULL | PUSHSHORT | PUSHMEDIUM | PUSHLONG | EXTRA;
 PULL = PLUS SPACE PATTERN;
 PATTERN = NOTSPACE;
 <SPACE> = #'\\s+';
 <NOTSPACE> = #'\\S+';
 <PLUS> = '+';
-DELAY500 = '////';
-DELAY50 = '///';
-DELAY10 = '//';
+DELAYLONG = '////';
+DELAYMEDIUM = '///';
+DELAYSHORT = '//';
 DELAY = '/';
 DONE = '*';
 ENDPULL = '!';
@@ -46,9 +47,14 @@ COUNT = \"c\";
 TODO = #'.*';
 FTODO = #'.*';
 LIST = 'l';
-LIST10 = 'll';
-LIST50 = 'lll';
-LIST500 = 'llll';
+LISTSHORT = 'll';
+LISTMEDIUM = 'lll';
+LISTLONG = 'llll';
+PUSHSHORT = '--' SPACE PATTERN;
+PUSHMEDIUM = '---' SPACE PATTERN;
+PUSHLONG = '----' SPACE PATTERN;
+EXTRA = 'e' SPACE MORE;
+MORE = #'.*';
 "))
 
 (defn handle-input [filename input mtc]
@@ -70,9 +76,23 @@ LIST500 = 'llll';
           (let [cmd (-> line second first)
                 data (-> line second (#(nth % 3)) second)]
 
+            (println line)
+            (println cmd)
+            (println data)
             (cond (= cmd :PULL)
                   (swap! mtc #(pull % data))
 
+                  (= cmd :PUSHSHORT)
+                  (swap! mtc #(push-pattern % data 10))
+
+                  (= cmd :PUSHMEDIUM)
+                  (swap! mtc #(push-pattern % data 50))
+
+                  (= cmd :PUSHLONG)
+                  (swap! mtc #(push-pattern % data 500))
+
+                  (= cmd :EXTRA)
+                  (swap! mtc #(extra % data))
                   )
 
             (show-next @mtc))
@@ -82,11 +102,11 @@ LIST500 = 'llll';
                 show (fn [x] (show-next @mtc) )]
             (cond (= cmd :LIST)
                   (show-all @mtc)
-                  (= cmd :LIST10)
+                  (= cmd :LISTSHORT)
                   (show-all (take 10 @mtc))
-                  (= cmd :LIST50)
+                  (= cmd :LISTMEDIUM)
                   (show-all (take 50 @mtc))
-                  (= cmd :LIST500)
+                  (= cmd :LISTLONG)
                   (show-all (take 500 @mtc))
 
                   (= cmd :DONE)
@@ -104,11 +124,11 @@ LIST500 = 'llll';
 
                   (= cmd :DELAY)
                   (show (swap! mtc delay-item))
-                  (= cmd :DELAY10)
+                  (= cmd :DELAYSHORT)
                   (show (swap! mtc #(delay-item % 10)))
-                  (= cmd :DELAY50)
+                  (= cmd :DELAYMEDIUM)
                   (show (swap! mtc #(delay-item % 50)))
-                  (= cmd :DELAY500)
+                  (= cmd :DELAYLONG)
                   (show (swap! mtc #(delay-item % 500)))
 
                   :else
@@ -130,11 +150,14 @@ Eg.
 lein run ~/Documents/todos/todo.txt
 
  ")
-    (let [lines (split (slurp (first args)) #"\n")
-          mtc (atom (make-MTC lines))]
-      (println "Welcome to Mind Traffic Control")
-      (show-next @mtc)
-      (while true
-        (let [x (read-line)]
-          (handle-input (first args) x mtc)
-          )))))
+    (let [fname (first args)]
+      (if (.exists (io/file fname))
+        (let [lines (split (slurp (first args)) #"\n")
+              mtc (atom (make-MTC lines))]
+          (println "Welcome to Mind Traffic Control")
+          (show-next @mtc)
+          (while true
+            (let [x (read-line)]
+              (handle-input (first args) x mtc)
+              )))
+        (println "Sorry, " fname " does not exist.")))))
