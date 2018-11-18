@@ -17,10 +17,7 @@
       (first mtc)))
 (defn tail [mtc] (rest mtc))
 (defn add [mtc item] (lazy-seq (concat mtc (list item) )))
-(defn add-first [mtc item]
-  (do
-    (println "in add-first " item )
-    (lazy-seq (cons item mtc))))
+(defn add-first [mtc item] (lazy-seq (cons item mtc)))
 
 
 (defn delay-item
