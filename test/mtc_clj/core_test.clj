@@ -1,7 +1,8 @@
 (ns mtc-clj.core-test
   (:require [clojure.test :refer :all]
             [mtc-clj.core :refer :all]
-
+            [mtc-clj.cli :refer [parse]]
+            [instaparse.core :as insta]
             )
   (:gen-class)
   )
@@ -52,3 +53,73 @@
              '("item2 +tag" "item4 +tag" "&tag info") ))
       )
     ))
+
+
+(deftest grammar
+  (testing "grammar"
+    (let [prs #(insta/parses parse %)]
+      (is (= (prs "hello world")
+             (list [:ALL [:TODO "hello world"]])))
+
+      (is (= (prs "+ hello")
+             (list [:ALL [:TODO "+ hello"]]
+                   [:ALL [:ARGINS [:PULL "+" " " [:PATTERN "hello"]]]]
+                   )))
+
+      (is (= (prs "*")
+             (list [:ALL [:TODO "*"]]
+                   [:ALL [:INS [:DONE "*"]]])))
+
+      (is (= (prs "!")
+             (list [:ALL [:TODO "!"]]
+                   [:ALL [:INS [:ENDPULL "!"]]])))
+
+      (is (= (prs "c")
+             (list [:ALL [:TODO "c"]]
+                   [:ALL [:INS [:COUNT "c"]]])))
+
+      (is (= (prs "s")
+             (list [:ALL [:TODO "s"]]
+                   [:ALL [:INS [:SAVE "s"]]])))
+
+      (is (= (prs "/")
+             (list [:ALL [:TODO "/"]]
+                   [:ALL [:INS [:DELAY "/"]]])))
+
+      (is (= (prs "//")
+             (list [:ALL [:TODO "//"]]
+                   [:ALL [:INS [:DELAY10 "//"]]])
+             ))
+
+      (is (= (prs "///")
+             (list [:ALL [:TODO "///"]]
+                   [:ALL [:INS [:DELAY50 "///"]]])
+             ))
+
+      (is (= (prs "////")
+             (list [:ALL [:TODO "////"]]
+                   [:ALL [:INS [:DELAY500 "////"]]])
+             ))
+
+
+      (is (= (prs "l")
+             (list [:ALL [:TODO "l"]]
+                   [:ALL [:INS [:LIST "l"]]])))
+
+      (is (= (prs "ll")
+             (list [:ALL [:TODO "ll"]]
+                   [:ALL [:INS [:LIST10 "ll"]]])))
+
+      (is (= (prs "lll")
+             (list [:ALL [:TODO "lll"]]
+                   [:ALL [:INS [:LIST50 "lll"]]])))
+
+      (is (= (prs "llll")
+             (list [:ALL [:TODO "llll"]]
+                   [:ALL [:INS [:LIST500 "llll"]]])))
+
+
+
+
+
+      )))
