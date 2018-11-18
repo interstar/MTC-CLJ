@@ -1,4 +1,4 @@
-# mtc-clj
+# Mind Traffic Control (Clojure Edition)
 
 Mind Traffic Control in Clojure  
 
