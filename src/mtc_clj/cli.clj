@@ -1,8 +1,12 @@
 (ns mtc-clj.cli
   (:require
    [instaparse.core :as insta]
-   [mtc-clj.core :refer [make-MTC next tail add pull delay done]]
-   ))
+   [clojure.string :refer [split join]]
+   [mtc-clj.core :refer [make-MTC next-item tail add pull
+                         add-first delay-item done]]
+   )
+  (:gen-class)
+  )
 
 
 
@@ -14,20 +18,20 @@
   )
 
 (defn show-next [mtc]
-  (println "Next : " (next mtc)))
+  (println "Next : " (next-item mtc)))
 
 
 
 (def parse
   (insta/parser "
 ALL = INS | ARGINS | TODO;
-INS = DONE | ENDPULL | DELAY | LIST
+INS = DONE | ENDPULL | SAVE | COUNT
+      | DELAY | LIST
       | DELAY10 | DELAY50 | DELAY500
       | LIST10 | LIST50 | LIST500;
-ARGINS = PULL | FRONTADD;
+ARGINS = PULL ;
 PULL = PLUS SPACE PATTERN;
 PATTERN = NOTSPACE;
-<FRONTADD> = ENDPULL SPACE FTODO;
 <SPACE> = #'\\s+';
 <NOTSPACE> = #'\\S+';
 <PLUS> = '+';
@@ -36,7 +40,9 @@ DELAY50 = '///';
 DELAY10 = '//';
 DELAY = '/';
 DONE = '*';
-ENDPULL = '\\\\';
+ENDPULL = '!!';
+SAVE = \"s\";
+COUNT = \"c\";
 TODO = #'.*';
 FTODO = #'.*';
 LIST = 'l';
@@ -45,24 +51,35 @@ LIST50 = 'lll';
 LIST500 = 'llll';
 "))
 
-(defn handle-input [input mtc]
+(defn handle-input [filename input mtc]
   (let [parsed (insta/parses parse input) ]
     (if (= 1 (count parsed))
-      (do
-        (swap! mtc add input)
-        (show-next @mtc))
+      (cond
+        (empty? input) (show-next @mtc)
+        (< (count input) 5)
+        (do
+          (println "Ignoring input " input " as it's too short.")
+          (show-next @mtc))
+        :else
+        (do
+          (swap! mtc add-first input)
+          (show-next @mtc)))
       (let [line (second (second parsed))]
         (cond
           (= :ARGINS (first line))
           (let [cmd (-> line second first)
-                pattern (-> line second (#(nth % 3)) second)]
-            (println "Argument ins " cmd " : " pattern)
+                data (-> line second (#(nth % 3)) second)]
+
             (cond (= cmd :PULL)
-                  (swap! mtc #(pull % pattern)))
+                  (swap! mtc #(pull % data))
+
+                  )
+
             (show-next @mtc))
 
           (= :INS (first line))
-          (let [cmd (first (second line))]
+          (let [cmd (first (second line))
+                show (fn [x] (show-next @mtc) )]
             (cond (= cmd :LIST)
                   (show-all @mtc)
                   (= cmd :LIST10)
@@ -73,28 +90,51 @@ LIST500 = 'llll';
                   (show-all (take 500 @mtc))
 
                   (= cmd :DONE)
-                  (swap! mtc done)
+                  (show (swap! mtc done))
+                  (= cmd :COUNT)
+                  (show (println (count @mtc) " items." ))
+                  (= cmd :SAVE)
+                  (do
+                    (spit filename (join "\n" @mtc) )
+                    (println "Saved ...")
+                    (show-next @mtc))
+
+                  (= cmd :ENDPULL)
+                  (show (swap! mtc pull))
 
                   (= cmd :DELAY)
-                  (swap! mtc delay)
+                  (show (swap! mtc delay-item))
                   (= cmd :DELAY10)
-                  (swap! mtc #(delay % 10))
+                  (show (swap! mtc #(delay-item % 10)))
                   (= cmd :DELAY50)
-                  (swap! mtc #(delay % 50))
+                  (show (swap! mtc #(delay-item % 50)))
                   (= cmd :DELAY500)
-                  (swap! mtc #(delay % 500))
+                  (show (swap! mtc #(delay-item % 500)))
 
                   :else
-                  (println "Don't understand " cmd))
-            (show-next @mtc)
+                  (show (println "Don't understand " cmd)))
             ))
 
         ))))
 
 (defn -main [& args]
-  (let [mtc (atom (make-MTC '()))]
-    (println "Welcome to Mind Traffic Control")
-    (while true
-      (let [x (read-line)]
-        (handle-input x mtc)
-        ))))
+  (if (empty? args)
+    (println "Welcome to Mind Traffic Control
+
+Mind Traffic Control works with a plain-text file of to-do items, typically called something like todo.txt.
+
+Please give the path to such a file as an argument when running this program.
+
+Eg.
+
+lein run ~/Documents/todos/todo.txt
+
+ ")
+    (let [lines (split (slurp (first args)) #"\n")
+          mtc (atom (make-MTC lines))]
+      (println "Welcome to Mind Traffic Control")
+      (show-next @mtc)
+      (while true
+        (let [x (read-line)]
+          (handle-input (first args) x mtc)
+          )))))
