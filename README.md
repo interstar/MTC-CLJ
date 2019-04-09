@@ -153,7 +153,7 @@ Or build a standalone JAR file with
     
 and run it with :
 
-    java -jar target/mtc-clj-0.1.0-SNAPSHOT-standalone.jar PATH/TO/todo.txt
+    java -jar target/mtc-clj-0.2.0-SNAPSHOT-standalone.jar PATH/TO/todo.txt
     
     
 ## License
