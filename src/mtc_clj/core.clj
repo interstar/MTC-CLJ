@@ -44,6 +44,14 @@
      )))
 
 
+(defn pull-one [mtc pattern]
+  mtc
+  )
+
+(defn query [mtc pattern]
+  (let [nf #(nil? (re-find (re-pattern pattern) %))]
+    (filter #(not (nf %)) mtc)))
+
 (defn push-pattern [mtc pattern len]
   (let [nf #(nil? (re-find (re-pattern pattern) %))
         no-match (filter nf mtc)
@@ -64,3 +72,9 @@
         not-items (filter #(not (item-filt %)) match)
         ]
     (lazy-seq (concat items not-items))))
+
+
+(defn reverse-n [mtc n]
+  (let [ni (read-string n)
+        rev-n (-> mtc (#(take ni %)) reverse )]
+    (lazy-seq (concat rev-n (drop ni mtc)))))

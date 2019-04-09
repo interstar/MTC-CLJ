@@ -3,7 +3,8 @@
    [clojure.java.io :as io]
    [instaparse.core :as insta]
    [clojure.string :refer [split join]]
-   [mtc-clj.core :refer [make-MTC next-item tail add pull extra
+   [mtc-clj.core :refer [make-MTC next-item tail add pull pull-one extra
+                         reverse-n query
                          add-first delay-item done push-pattern]]
    )
   (:gen-class)
@@ -30,12 +31,16 @@ INS = DONE | ENDPULL | SAVE | COUNT
       | DELAY | LIST
       | DELAYSHORT | DELAYMEDIUM | DELAYLONG
       | LISTSHORT | LISTMEDIUM | LISTLONG;
-ARGINS = PULL | PUSHSHORT | PUSHMEDIUM | PUSHLONG | EXTRA;
+ARGINS = PULL | PULLONE | REVERSE | PUSHSHORT | PUSHMEDIUM | PUSHLONG | EXTRA | QUERY ;
 PULL = PLUS SPACE PATTERN;
 PATTERN = NOTSPACE;
+PULLONE = PLUS PLUS SPACE PATTERN;
+REVERSE = 'r' SPACE N
 <SPACE> = #'\\s+';
 <NOTSPACE> = #'\\S+';
 <PLUS> = '+';
+QUERY = '?' SPACE PATTERN;
+N = #'[0-9+]'
 DELAYLONG = '////';
 DELAYMEDIUM = '///';
 DELAYSHORT = '//';
@@ -76,11 +81,20 @@ MORE = #'.*';
           (let [cmd (-> line second first)
                 data (-> line second (#(nth % 3)) second)]
 
-            (println line)
-            (println cmd)
-            (println data)
             (cond (= cmd :PULL)
                   (swap! mtc #(pull % data))
+
+                  (= cmd :PULLONE)
+                  (do
+                    (println "Pull One not currently implemented.")
+                    (swap! mtc #(pull-one % data)))
+
+                  (= cmd :REVERSE)
+                  (do
+                    (println (str "In REVERSE N. N is " data) )
+                    (swap! mtc #(reverse-n % data))
+                    (println "___________")
+                    (println mtc))
 
                   (= cmd :PUSHSHORT)
                   (swap! mtc #(push-pattern % data 10))
@@ -90,6 +104,12 @@ MORE = #'.*';
 
                   (= cmd :PUSHLONG)
                   (swap! mtc #(push-pattern % data 500))
+
+                  (= cmd :QUERY)
+                  (let [res (query @mtc data)]
+                    (println (str "Searching for " data))
+                    (doseq [item res]
+                      (println (str "> " item))))
 
                   (= cmd :EXTRA)
                   (swap! mtc #(extra % data))
@@ -148,8 +168,8 @@ Please give the path to such a file as an argument when running this program.
 Eg.
 
 lein run ~/Documents/todos/todo.txt
-
  ")
+
     (let [fname (first args)]
       (if (.exists (io/file fname))
         (let [lines (split (slurp (first args)) #"\n")
