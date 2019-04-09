@@ -117,13 +117,22 @@ This lets you peek ahead. Typically when you want to remind yourself if there ar
 
 MTC has no explicit notion of priority or urgency. In usage, just keep urgent / high priority items near the beginning of the queue.
 
-**Important**
+As of version 0.2.0 we have now added a "search" or "query" option which is not the same as pulling.
+
+`q PATTERN` is a way to search and show all items that contain the PATTERN **without** pulling them to the front of the queue.
+
+
+#### IMPORTANT - SAVE YOUR WORK 
 
 MTC works on the queue in memory. You need to explicitly save it back to the todo.txt file.
 
 Use the command `s` to save.
 
+#### Other Features
 
+`r NUMBER` - reverses the list of the top NUMBER of items.
+
+Sometimes you just copied five todos off a list you had written elsewhere. It's nice to capture these options in MTC, but they're  *backwards*!!! The list you copied was in order. But because MTC adds each new items to the front of the queue, they're now in reverse order. This is a nuissance. So `r 5` to the rescue. It reverses the top five items of the queue. And now they're in the order you expect.
 
 Finally, the command `c` gives you a count of how many items you have in the queue. Which is something you sometimes want to know.
 
