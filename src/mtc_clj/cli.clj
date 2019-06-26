@@ -20,7 +20,12 @@
   )
 
 (defn show-next [mtc]
-  (println "Next : " (next-item mtc)))
+  (let [sep (apply str (take 80 (repeat "-")))]
+    (do
+      (println sep)
+      (println "Next : " (next-item mtc))
+      (println sep)
+      )))
 
 
 
@@ -91,10 +96,8 @@ MORE = #'.*';
 
                   (= cmd :REVERSE)
                   (do
-                    (println (str "In REVERSE N. N is " data) )
                     (swap! mtc #(reverse-n % data))
-                    (println "___________")
-                    (println mtc))
+                    (println "Reversed first " data " items"))
 
                   (= cmd :PUSHSHORT)
                   (swap! mtc #(push-pattern % data 10))
@@ -109,7 +112,11 @@ MORE = #'.*';
                   (let [res (query @mtc data)]
                     (println (str "Searching for " data))
                     (doseq [item res]
-                      (println (str "> " item))))
+                      (println (str "> " item))
+                      )
+                    (println )
+                    )
+
 
                   (= cmd :EXTRA)
                   (swap! mtc #(extra % data))
