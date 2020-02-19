@@ -39,11 +39,12 @@ INS = DONE | ENDPULL | SAVE | COUNT
 ARGINS = PULL | PULLONE | REVERSE | PUSHSHORT | PUSHMEDIUM | PUSHLONG | EXTRA | QUERY ;
 PULL = PLUS SPACE PATTERN;
 PATTERN = NOTSPACE;
-PULLONE = PLUS PLUS SPACE PATTERN;
+PULLONE = DOUBLEPLUS SPACE PATTERN;
 REVERSE = 'r' SPACE NUMBER
 <SPACE> = #'\\s+';
 <NOTSPACE> = #'\\S+';
 <PLUS> = '+';
+<DOUBLEPLUS> = '++';
 QUERY = '?' SPACE PATTERN;
 NUMBER = #'[0-9]+'
 DELAYLONG = '////';
@@ -91,7 +92,6 @@ MORE = #'.*';
 
                   (= cmd :PULLONE)
                   (do
-                    (println "Pull One not currently implemented.")
                     (swap! mtc #(pull-one % data)))
 
                   (= cmd :REVERSE)

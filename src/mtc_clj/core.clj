@@ -45,8 +45,8 @@
 
 
 (defn pull-one [mtc pattern]
-  mtc
-  )
+  (let [[before from] (split-with #(not (re-find (re-pattern pattern) %)) mtc)]
+    (lazy-seq (concat [(first from)] before (rest from) ))))
 
 (defn query [mtc pattern]
   (let [nf #(nil? (re-find (re-pattern pattern) %))]

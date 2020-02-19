@@ -71,6 +71,13 @@
     ))
 
 
+(deftest pull-one-test
+  (testing "pull a single matching item to the top"
+    (let [mtc (make-MTC '("i1 a" "i2 +b" "i3 +c" "i4 +c" "i5 bla" "i6"))]
+      (is (= (pull-one mtc #"\+c")
+             '("i3 +c" "i1 a" "i2 +b" "i4 +c" "i5 bla" "i6"))))))
+
+
 (deftest grammar
   (testing "grammar"
     (let [prs #(insta/parses parse %)]
@@ -81,6 +88,10 @@
              (list [:ALL [:TODO "+ hello"]]
                    [:ALL [:ARGINS [:PULL "+" " " [:PATTERN "hello"]]]]
                    )))
+
+      (is (= (prs "++ hello")
+             (list [:ALL [:TODO "++ hello"]]
+                   [:ALL [:ARGINS [:PULLONE "++" " " [:PATTERN "hello"]]]])))
 
       (is (= (prs "-- goodbye")
              (list [:ALL [:TODO "-- goodbye"]]
