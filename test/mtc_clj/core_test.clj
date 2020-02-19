@@ -97,6 +97,9 @@
                    [:ALL [:ARGINS [:PUSHLONG "----" " " [:PATTERN "goodbye"]]]]
                    )))
 
+      (is (= (prs "r 14")
+             (list [:ALL [:TODO "r 14"]]
+                   [:ALL [:ARGINS [:REVERSE "r" " " [:NUMBER "14"]]]])))
 
       (is (= (prs "e mo' better blues")
              (list [:ALL [:TODO "e mo' better blues"]]
