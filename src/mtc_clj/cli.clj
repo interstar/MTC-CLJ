@@ -139,7 +139,7 @@ MORE = #'.*';
                   (= cmd :DONE)
                   (show (swap! mtc done))
                   (= cmd :COUNT)
-                  (show (println (count @mtc) " items." ))
+                  (show (println (count @mtc) " items. In " filename ))
                   (= cmd :SAVE)
                   (do
                     (spit filename (join "\n" @mtc) )
