@@ -51,7 +51,7 @@ I use the standard todo.txt conventions of having a `+` in front of project name
 
 So `+MTC` is my tag for items related to developing or distributing MTC. `@email` is my tag for any item that involves writing an email. 
 
-MTC has no special commands to handle these tags. And you can use any conveention that you like.
+MTC has no special commands to handle these tags. And you can use any convention that you like.
 
 If you want to pull tags to the front of the queue, simply write an appropriate pattern and use with the "pull" command `+`.
 
@@ -60,6 +60,12 @@ Note that PATTERN is a standard regex. Which is powerful. But gives rise to one 
 So use `+ \+MTC` when pulling all items tagged +MTC to the front.
 
 `@` is not problematic so you can write `+ @email` to pull all email context items to the front.
+
+Sometimes you have a lot of tagged items in a project, but don't want to pull them all (which will push back everything you have in your queue). 
+
+So there is also a `pull-one` command using a double plus sign.
+
+`++ PATTERN` pulls only the first match of PATTERN to the front of the queue. 
 
 
 As well as pulling items that match a pattern to the front of the queue, you can also push them back.
