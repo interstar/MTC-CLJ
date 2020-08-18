@@ -125,7 +125,7 @@ MTC has no explicit notion of priority or urgency. In usage, just keep urgent / 
 
 As of version 0.2.0 we have now added a "search" or "query" option which is not the same as pulling.
 
-`q PATTERN` is a way to search and show all items that contain the PATTERN **without** pulling them to the front of the queue.
+`? PATTERN` is a way to search and show all items that contain the PATTERN **without** pulling them to the front of the queue.
 
 
 #### IMPORTANT - SAVE YOUR WORK 
