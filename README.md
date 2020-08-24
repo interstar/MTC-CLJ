@@ -55,15 +55,7 @@ MTC has no special commands to handle these tags. And you can use any convention
 
 If you want to pull tags to the front of the queue, simply write an appropriate pattern and use with the "pull" command `+`.
 
-Note that PATTERN is a standard regex. Which is powerful. But gives rise to one "quirk" (or bug). The `+` is a special character in regex and so must be escaped when you want to quote it literally. 
-
-So use `+ \+MTC` when pulling all items tagged +MTC to the front.
-
-`@` is not problematic so you can write `+ @email` to pull all email context items to the front.
-
-Sometimes you have a lot of tagged items in a project, but don't want to pull them all (which will push back everything you have in your queue). 
-
-So there is also a `pull-one` command using a double plus sign.
+Sometimes you have a lot of tagged items in a project, but don't want to pull them all (which will push back everything else you have in your queue). So there is also a `pull-one` command using a double plus sign.
 
 `++ PATTERN` pulls only the first match of PATTERN to the front of the queue. 
 
@@ -133,6 +125,8 @@ As of version 0.2.0 we have now added a "search" or "query" option which is not 
 MTC works on the queue in memory. You need to explicitly save it back to the todo.txt file.
 
 Use the command `s` to save.
+
+You can quit MTC using the `q` command. When you quit, **MTC does NOT automatically save your list***. However it DOES save it in a file in the same directory with the **tmp_** prefix. If you find you quit by mistake without saving, you can recover the state at which you quit in that file.
 
 #### Other Features
 
