@@ -68,6 +68,18 @@ EXTRA = 'e' SPACE MORE;
 MORE = #'.*';
 "))
 
+
+
+(defmacro safere [expr]
+  `(try
+     ~expr
+    (catch Exception e#
+      (println
+       (str "Something went wrong. Probably a malformed regex.
+
+Exception was :
+") (.getMessage e#)))))
+
 (defn handle-input [filename input mtc]
   (let [parsed (insta/parses parse input) ]
     (if (= 1 (count parsed))
@@ -88,11 +100,11 @@ MORE = #'.*';
                 data (-> line second (#(nth % 3)) second)]
 
             (cond (= cmd :PULL)
-                  (swap! mtc #(pull % data))
+                  (safere (swap! mtc #(pull % data)))
 
                   (= cmd :PULLONE)
-                  (do
-                    (swap! mtc #(pull-one % data)))
+                  (safere
+                   (swap! mtc #(pull-one % data)))
 
                   (= cmd :REVERSE)
                   (do
@@ -109,13 +121,14 @@ MORE = #'.*';
                   (swap! mtc #(push-pattern % data 500))
 
                   (= cmd :QUERY)
-                  (let [res (query @mtc data)]
-                    (println (str "Searching for " data))
-                    (doseq [item res]
-                      (println (str "> " item))
-                      )
-                    (println )
-                    )
+                  (safere
+                    (let [res (query @mtc data)]
+                        (println (str "Searching for " data))
+                        (doseq [item res]
+                          (println (str "> " item))
+                          )
+                        (println )
+                        ))
 
 
                   (= cmd :EXTRA)

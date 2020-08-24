@@ -30,13 +30,19 @@
 
 (defn done [mtc] (tail mtc))
 
+(defn safeq [q]
+  (if (= (first q) \+)
+    (str "\\" q)
+    q))
+
 (defn pull
   ([mtc]
    (let [sting (last mtc)]
      (lazy-seq (concat (list sting) (butlast mtc))))
    )
   ([mtc pattern]
-   (let [nf #(nil? (re-find (re-pattern pattern) %))
+   (let [safe-pat (safeq pattern)
+         nf #(nil? (re-find (re-pattern safe-pat) %))
          no-match (filter nf mtc )
          match (filter #(not (nf %)) mtc )
          ]
@@ -45,15 +51,18 @@
 
 
 (defn pull-one [mtc pattern]
-  (let [[before from] (split-with #(not (re-find (re-pattern pattern) %)) mtc)]
+  (let [safe-pat (safeq pattern)
+        [before from] (split-with #(not (re-find (re-pattern safe-pat) %)) mtc)]
     (lazy-seq (concat [(first from)] before (rest from) ))))
 
 (defn query [mtc pattern]
-  (let [nf #(nil? (re-find (re-pattern pattern) %))]
+  (let [safe-pat (safeq pattern)
+        nf #(nil? (re-find (re-pattern safe-pat) %))]
     (filter #(not (nf %)) mtc)))
 
 (defn push-pattern [mtc pattern len]
-  (let [nf #(nil? (re-find (re-pattern pattern) %))
+  (let [safe-pat (safeq pattern)
+        nf #(nil? (re-find (re-pattern safe-pat) %))
         no-match (filter nf mtc)
         match (filter #(not (nf %)) mtc )
         before (take len no-match)
