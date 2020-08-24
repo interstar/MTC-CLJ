@@ -32,7 +32,7 @@
 (def parse
   (insta/parser "
 ALL = INS | ARGINS | TODO;
-INS = DONE | ENDPULL | SAVE | COUNT
+INS = DONE | ENDPULL | SAVE | COUNT | QUIT
       | DELAY | LIST
       | DELAYSHORT | DELAYMEDIUM | DELAYLONG
       | LISTSHORT | LISTMEDIUM | LISTLONG;
@@ -55,6 +55,7 @@ DONE = '*';
 ENDPULL = '!';
 SAVE = \"s\";
 COUNT = \"c\";
+QUIT = \"q\";
 TODO = #'.*';
 FTODO = #'.*';
 LIST = 'l';
@@ -158,6 +159,13 @@ Exception was :
                     (spit filename (join "\n" @mtc) )
                     (println "Saved ...")
                     (show-next @mtc))
+
+                  (= cmd :QUIT)
+                  (do
+                    (spit (str "tmp_" filename) (join "\n" @mtc))
+                    (println "Quitting ... saved current state in tmp_" filename)
+                    (System/exit 0)
+                    )
 
                   (= cmd :ENDPULL)
                   (show (swap! mtc pull))
