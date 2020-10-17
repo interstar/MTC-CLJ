@@ -128,7 +128,8 @@ Exception was :
                         (doseq [item res]
                           (println (str "> " item))
                           )
-                        (println )
+                        (println "Total matches :" (count res))
+                        (println)
                         ))
 
 
