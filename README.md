@@ -40,7 +40,7 @@ To defer an item you use the `/` key.
 
 `////` throws the item 500 back in the queue.
 
-As mentioned previously, I have around 1300 items in my MTC. I haven't felt the need for a command to throw items 5000 back. But if you find yourself in the position of needing it, then make a request :-) It's literally two extra lines of code to add it.
+As mentioned previously, I have around 1300 items in my MTC. I haven't felt the need for a command to throw items 5000 back. But if you find yourself in the position of needing it, then make a request :-) It's literally three extra lines of code to add it.
 
 
 
