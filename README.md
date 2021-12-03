@@ -13,8 +13,9 @@ Despite its simplicity MTC is powerful in two ways :
 
 * it is very simple to control, typically you can achieve what you want with a minimal number of keystrokes that are also trivial to learn.
 
-MTC is designed to help you remember and do your tasks. Not to faff about with task management software or methodologies. So the philosophy is one of minimalism. It keeps out of your way and requires the minimum from the user to make it work.
+MTC is designed to help you remember and do your tasks. Not to faff about with task management software or methodologies. So the philosophy is one of minimalism. It keeps out of your way and requires the minimum from the user to make it work. 
 
+Unlike social media, and a lot of apps today, MTC wants to minimize the time you actually spend using it. MTC is working well for you if you look at it for less than a minute a day, but still manage to track and get your tasks done.
 
 ### Basic Usage
 
@@ -25,9 +26,9 @@ When faced with this task you can basically do one of two things :
 * delete it from MTC, either because you've done it, or decided it no longer needs doing
 * defer it to some time in the future, ie. throw it further back in the queue
 
-MTC makes no distinction between cancelling a task and doing it. This is a pointless distinction. MTC is ruthlessly focussed on being useful to help you track what you *need to do*. Not what you've done.
+You'll note that MTC makes no distinction between cancelling a task and doing it. This is a pointless distinction. MTC is ruthlessly focussed on being useful to help you track what you *need to do*. Not what you've done.
 
-To delete the "next item" simply type `*` and hit the return key.
+To delete this "next item" (ie. the first item in the queue) simply type `*` and hit the return key.
 
 To defer an item you use the `/` key.
 
@@ -40,6 +41,14 @@ To defer an item you use the `/` key.
 `////` throws the item 500 back in the queue.
 
 As mentioned previously, I have around 1300 items in my MTC. I haven't felt the need for a command to throw items 5000 back. But if you find yourself in the position of needing it, then make a request :-)
+
+
+
+#### Er ... OK. But how do I actually add items?
+
+Just start typing them in at the command prompt.
+
+By default if you type any phrase over about 6 letters that isn't obviously one of the commands described above, or in the next section, it's assumed to be another todo item, and is added **on the front** of the queue. Note: new items go on the front by default. I used to add them on the end, but on the front turns out to be better. MTC is a todo-queue. But also a "stack" :-)
 
 #### Pattern Based Manipulation of the Queue
 
